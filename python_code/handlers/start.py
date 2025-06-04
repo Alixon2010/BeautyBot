@@ -1,11 +1,11 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.filters import CommandStart
 
 from Database.tables import Users, user_session
-import re
+
 
 start_router = Router()
 class Reg(StatesGroup):
