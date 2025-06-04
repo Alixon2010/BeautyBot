@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from aiogram.filters import CommandStart
 
 from Database.tables import Users, user_session
@@ -18,9 +18,11 @@ class Reg(StatesGroup):
 
 @start_router.message(CommandStart())
 async def start(message: Message, state: FSMContext):
-    if user := Users.get_by_id(user_session, message.chat.id) is None:
+    user = Users.get_by_id(user_session, message.chat.id)
+    if user is None:
         await message.answer("Ismingizni kiriting")
         await state.set_state(Reg.ism)
+        return
     await message.answer(user.greating)
 
 
@@ -67,6 +69,6 @@ async def phone(message: Message, state:FSMContext):
                  phone=data["phone"])
     user.save(session=user_session)
     await state.clear()
-    await message.answer(f"Registratsiya qilganingiz uchun raxmat, botdan foydalanishingiz mumkin😊")
+    await message.answer(f"Registratsiya qilganingiz uchun raxmat, botdan foydalanishingiz mumkin😊", reply_markup=ReplyKeyboardRemove())
 
 

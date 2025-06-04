@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, BigInteger
+from sqlalchemy import create_engine, Column, String, BigInteger
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 load_dotenv()
@@ -10,20 +10,19 @@ host = getenv('HOST')
 port = getenv('PORT')
 database = getenv('DATABASE')
 
-engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}', echo=True)
+engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}')
 
 Base = declarative_base()
 
 class Users(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    chat_id = Column(BigInteger, unique=True, nullable=False)
+    chat_id = Column(BigInteger, primary_key=True)
     firstname = Column(String(50), nullable=False)
     lastname = Column(String(50), nullable=False)
     phone = Column(String(13), nullable=False)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.id}, {self.chat_id}, {self.firstname!r}, {self.lastname}, {self.phone})'
+        return f'{self.__class__.__name__}({self.chat_id}, {self.firstname!r}, {self.lastname}, {self.phone})'
 
     @property
     def greating(self):
@@ -46,7 +45,7 @@ class Users(Base):
 
     @classmethod
     def delete(cls, session, id_):
-        obj = session.query(cls).filter(id_ == cls.chat_id).first()
+        obj = session.query(cls).filter(cls.chat_id == id_).first()
         if obj:
             session.delete(obj)
             session.commit()
@@ -55,7 +54,7 @@ class Users(Base):
 
     @classmethod
     def get_by_id(cls, session, id_):
-        return session.query(cls).filter(id_ == cls.chat_id).first()
+        return session.query(cls).filter(cls.chat_id == id_).first()
 
     # update
     @classmethod
@@ -71,5 +70,5 @@ class Users(Base):
             return True
         return False
 
-session = sessionmaker(bind=engine)
+session = sessionmaker(bind=engine, expire_on_commit=False)
 user_session = session()
